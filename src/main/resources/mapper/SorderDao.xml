@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy9860.shop.dao.SorderDao">
+  <select id="querySale" >
+  	SELECT sid, sname,sprice,snumber,pid,fid
+  	FROM sorder
+  	WHERE fid={_parameter}
+  </select> 
+</mapper>

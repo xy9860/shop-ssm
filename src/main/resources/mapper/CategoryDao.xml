@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为DAO接口提供SQL语句配置 -->
+<mapper namespace="com.xy9860.shop.dao.CategoryDao">
+  
+   <select id="queryJoinAccount" resultType="Category">
+  	SELECT a.aid "account.aid",
+  		   a.alogin "account.alogin",
+  		   a.aname "account.aname",
+  		   a.apass "account.apass",
+  		   c.cid,
+  		   c.ctype,
+  		   c.chot
+  	FROM category c
+  	LEFT JOIN account a
+  	ON a.aid=c.aid
+  	WHERE c.ctype like '%' #{ctype} '%'
+ 	ORDER BY c.cid
+ 	LIMIT #{offset},#{limit}
+  </select> 
+  <select id="getCount" resultType="Long">
+  	SELECT count(cid)
+  	FROM category
+  	WHERE ctype=#{ctype}
+  </select> 
+   <delete id="deleteByIds" parameterType="String">
+  	DELETE
+  	FROM category
+  	WHERE cid in (${_parameter})
+  </delete> 
+    <select id="queryByChot" resultType="Category">
+  	SELECT a.aid "account.aid",
+  		   a.alogin "account.alogin",
+  		   a.aname "account.aname",
+  		   a.apass "account.apass",
+  		   c.cid,
+  		   c.ctype,
+  		   c.chot
+  	FROM category c
+  	LEFT JOIN account a
+  	ON a.aid=c.aid
+  	WHERE c.chot = #{_parameter}
+  </select> 
+  <select id="query" resultType="Category">
+  	SELECT a.aid "account.aid",
+  		   a.alogin "account.alogin",
+  		   a.aname "account.aname",
+  		   a.apass "account.apass",
+  		   c.cid,
+  		   c.ctype,
+  		   c.chot
+  	FROM category c
+  	LEFT JOIN account a
+  	ON a.aid=c.aid
+  </select>
+  <insert id="save">
+  	INSERT INTO category 
+  	(ctype,chot,aid)
+  	VALUES(#{category.ctype},#{category.chot},#{category.account.aid})
+  </insert>
+  <update id="update">
+  	UPDATE category 
+  	SET ctype=#{category.ctype} ,chot=#{category.chot} ,aid=#{category.account.aid} 
+  	WHERE cid =#{category.cid}
+  </update>
+</mapper>

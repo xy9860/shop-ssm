@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为DAO接口提供SQL语句配置 -->
+<mapper namespace="com.xy9860.shop.dao.ProductDao">
+  
+   <select id="queryJoinCategory" resultType="Product">
+  	SELECT p.pid,
+  		   p.pname,
+  		   p.price,
+  		   p.pic,
+  		   p.premark,
+  		   p.pxremark,
+  		   p.pdate,
+  		   p.pcommend,
+  		   p.popen,
+  		   p.cid,
+  		   c.cid "category.cid",
+  		   c.ctype,
+  		   c.chot
+  	FROM product p
+  	LEFT JOIN category c
+  	ON p.cid=c.cid
+  	WHERE p.pname like '%' #{pname} '%'
+ 	ORDER BY p.pdate DESC
+ 	LIMIT #{offset},#{limit}
+  </select> 
+  <select id="getCount" resultType="Long">
+  	SELECT count(*)
+  	FROM product
+  	WHERE pname like '%' #{_parameter} '%'
+  </select> 
+   <delete id="deleteByIds" parameterType="String">
+  	DELETE
+  	FROM product
+  	WHERE pid in (${_parameter})
+  </delete> 
+    <select id="queryByCid" resultType="Product">
+  	SELECT p.pid,
+  		   p.pname,
+  		   p.price,
+  		   p.pic,
+  		   p.premark,
+  		   p.pxremark,
+  		   p.pdate,
+  		   p.pcommend,
+  		   p.popen,
+  		   p.cid,
+  		   c.cid "category.cid",
+  		   c.ctype,
+  		   c.chot
+  	FROM product p
+  	LEFT JOIN category c
+  	ON p.cid=c.cid
+  	WHERE p.cid = #{_parameter}
+  </select> 
+  <select id="get" resultType="Product">
+  	SELECT p.pid,
+  		   p.pname,
+  		   p.price,
+  		   p.pic,
+  		   p.premark,
+  		   p.pxremark,
+  		   p.pdate,
+  		   p.pcommend,
+  		   p.popen,
+  		   p.cid,
+  		   c.cid "category.cid",
+  		   c.ctype,
+  		   c.chot
+  	FROM product p
+  	LEFT JOIN category c
+  	ON p.cid=c.cid
+  	WHERE p.pid = #{_parameter}
+  </select>
+  <insert id="save">
+  	INSERT INTO product 
+  	(pname,price,pic,premark,pxremark,pdate,pcommend,popen,cid)
+  	VALUES(#{product.pname},#{product.price},#{product.pic},#{product.premark},
+  	#{product.pxremark},#{product.pdate},#{product.pcommend},#{product.popen},
+  	#{product.cid})
+  </insert>
+  <update id="update">
+  	UPDATE product 
+  	SET pname=#{product.pname},price=#{product.price},pic=#{product.pic},premark=#{product.premark},
+  	pxremark=#{product.pxremark},pdate=#{product.pdate},pcommend=#{product.pcommend},popen=#{product.popen},
+  	cid=#{product.cid},pid=#{product.pid}
+  	WHERE pid =#{product.pid}
+  </update>
+</mapper>

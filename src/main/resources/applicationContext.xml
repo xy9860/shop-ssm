@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:security="http://www.springframework.org/schema/security"  
+    xmlns:jpa="http://www.springframework.org/schema/data/jpa"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd  
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd  
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd  
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd  
+    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd  
+    http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.5.xsd">  
+
+	<!-- 配置注解扫描 -->
+	<context:component-scan base-package="com.xy9860.shop.."></context:component-scan>
+	<!-- 加载properties 所有的properties都应该交给spring管理,在启动时加载 
+		spring 支持两种方式 property-placeholder只能在XML中使用
+		想在注解中使用使用  bean 加载的方式进行 org.springframework.beans.factory.config.PropertyPathFactoryBean
+	<context:property-placeholder location="classpath:conn.properties"/>
+	下面这个是上面表达式的父类 实例化出来的  也支持XML
+	<bean id="prop" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:conn.properties</value>
+				<value>classpath:public.properties</value>
+			</array>
+		</property>
+	</bean>
+	下面这个仅支持注解方式
+	-->
+	<bean id="prop" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<array>
+				<value>classpath:public.properties</value>
+				<value>classpath:pay.properties</value>
+			</array>
+		</property>
+	</bean>
+	<context:property-placeholder location="classpath:conn.properties"/>
+	<!-- <import resource="applicationContext-*.xml"/> -->
+
+    <bean id="dataSource" class="${dataSource}">
+    	<property name="driverClass" value="${driverClass}" />
+   		<property name="jdbcUrl" value="${jdbcUrl}" />
+   		<property name="user" value="${user}" />
+   		<property name="password" value="${password}" />
+    </bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybaits-Configuration.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<!-- 扫描 实体包 使用别名   可以使用分号分隔-->
+		<property name="typeAliasesPackage" value="com.xy9860.shop.model" />
+		<!-- 扫描sql配置文件  需要xml文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml" />
+	</bean>
+    
+    	<!-- 配置扫描 DAO接口包,动态实现DAO接口,并注入到Spring容器中 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 这里不建议使用sqlSessionFactory 注入 建议 使用sqlSessionFactoryBeanName 进行后处理  防止初始化错误 -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+		<!-- 给出需要扫描的DAO接口包 -->
+		<property name="basePackage" value="com.xy9860.shop.dao" />
+	</bean>
+    
+    
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 这里可以使用 tx:annoe..-driven  方式启用注解  然后在业务层 添加注解的方式 进行添加注解 -->
+    <tx:advice id="advice" transaction-manager="transactionManager">
+    	<tx:attributes>
+    		<!-- <tx:method name="save*" propagation="REQUIRED"/>
+    		<tx:method name="update*" propagation="REQUIRED"/>
+    		<tx:method name="delete*" propagation="REQUIRED"/> -->
+    		<tx:method name="*" propagation="REQUIRED"/>
+    	</tx:attributes>
+    </tx:advice>
+    
+    <aop:config>
+    	<aop:pointcut expression="execution(* com.xy9860.shop.*.impl.*.*(..))" id="pointcut"/>
+    	<aop:advisor advice-ref="advice" pointcut-ref="pointcut"/>
+    </aop:config>
+ </beans>

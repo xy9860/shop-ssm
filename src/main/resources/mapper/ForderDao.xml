@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为DAO接口提供SQL语句配置 -->
+<mapper namespace="com.xy9860.shop.dao.ForderDao">
+  
+  <insert id="save" useGeneratedKeys="true" keyProperty="fid">
+  	INSERT INTO forder 
+  	(fname,fphone,fremark,ftotal,fpost,faddress,tid,uid)
+  	VALUES(#{fname},#{fphone},#{fremark},
+  	#{ftotal},#{fpost},
+  	#{faddress},#{status.tid},#{user.uid})
+  </insert>
+  <update id="updateStatusByFid">
+  	UPDATE forder 
+  	SET tid=#{tid}
+  	WHERE fid =#{fid}
+  </update>
+</mapper>
